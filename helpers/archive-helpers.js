@@ -24,17 +24,19 @@ exports.readListOfUrls = function(cb) {
 };
 
 exports.isUrlInList = function(url, cb) {
-  cb(_.contains( this.readListOfUrls(function(v) { return v }, url)));  
+  this.readListOfUrls(function(v) {
+    cb(_.contains(v, url));
+  });  
 };
 
 exports.addUrlToList = function(url, cb) {
-  fs.writeFile( this.paths.list, url, 'utf8', function(err) { cb() });
+  fs.writeFile( this.paths.list, url + '\n', 'utf8', function(err) { cb() });
 };
 
 exports.isUrlArchived = function(url, cb) {
   var fullPath = this.paths.archivedSites + '/' + url;
   fs.readdir(this.paths.archivedSites, function(err, data){
-    return cb(_.contains(data, fullPath));
+    cb(_.contains(data, fullPath));
   }), fullPath };
 
 exports.downloadUrls = function(array) {
