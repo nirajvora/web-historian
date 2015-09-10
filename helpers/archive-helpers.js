@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var that = this;
 
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
@@ -40,12 +41,17 @@ exports.isUrlArchived = function(url, cb) {
   }), fullPath };
 
 exports.downloadUrls = function(array) {
-  // for (var i = 0; i < array.length; i++){
-  //   console.log(array[i])
-  //   if(!isUrlArchived(array[i], function(v){return v})){
-  //     var file = fs.openSync(this.paths.archivedSites + "/" + array[i], "w");
-  //     fs.closeSync(file);
-  //   }
-  // }
-
+  for (var i = 0; i < array.length; i++) {
+    var tempI = array[i];
+    exports.isUrlArchived(tempI, function(bool) {
+      console.log(tempI)
+      if (!bool) {
+        fs.writeFile(exports.paths.archivedSites + '/' + tempI, tempI, function(error, data) {
+          if (error) {
+            throw error
+          }
+        });
+      }
+    });
+  }
 };
