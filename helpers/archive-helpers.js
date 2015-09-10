@@ -2,13 +2,6 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 
-/*
- * You will need to reuse the same paths many times over in the course of this sprint.
- * Consider using the `paths` object below to store frequently used file paths. This way,
- * if you move any files, you'll only need to change your code in one place! Feel free to
- * customize it in any way you wish.
- */
-
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
@@ -21,9 +14,6 @@ exports.initialize = function(pathsObj) {
     exports.paths[type] = path;
   });
 };
-
-// The following function names are provided to you to suggest how you might
-// modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(cb) {
   var dataArray;
@@ -43,8 +33,17 @@ exports.addUrlToList = function(url, cb) {
 
 exports.isUrlArchived = function(url, cb) {
   var fullPath = this.paths.archivedSites + '/' + url;
-  fs.access(fullPath, function() { cb() });
-};
+  fs.readdir(this.paths.archivedSites, function(err, data){
+    return cb(_.contains(data, fullPath));
+  }), fullPath };
 
-exports.downloadUrls = function(arr) {
+exports.downloadUrls = function(array) {
+  // for (var i = 0; i < array.length; i++){
+  //   console.log(array[i])
+  //   if(!isUrlArchived(array[i], function(v){return v})){
+  //     var file = fs.openSync(this.paths.archivedSites + "/" + array[i], "w");
+  //     fs.closeSync(file);
+  //   }
+  // }
+
 };
