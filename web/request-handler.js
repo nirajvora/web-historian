@@ -12,11 +12,9 @@ exports.handleRequest = function (req, res) {
   var url = req.url;
   if (req.method === 'POST') {
     var fullBody = '';
-    
     req.on('data', function(chunk) {
       fullBody += chunk.toString();
     });
-
     req.on('end', function() {
       var decodedBody = querystring.parse(fullBody)
       url = decodedBody.url;
@@ -25,16 +23,23 @@ exports.handleRequest = function (req, res) {
         if (!bool) {
           archive.addUrlToList(url, function() {
             res.writeHead(302, {Location: url});
-            res.end()
+            res.end();
           });
         }
       });
-      
     });
-    
-  }
-
-  if (req.url === '/' && req.method === 'GET') {
+  } else if (req.method === 'GET' && req.url !== '/') {
+    fs.readFile(archive.paths.archivedSites + '/' + req.url, function(err, data) {
+      if (err) {
+        res.writeHead(404, http.headers);
+        res.end();
+      } else {
+        var temp = data.toString();
+        res.writeHead(200, http.headers);
+        res.end(temp);
+      }
+    });
+  } else if (req.url === '/' && req.method === 'GET') {
     fs.readFile(indexURL, function(err, data){
       if (err) {
         console.log("ERROR: in handleRequest - readFile of indexURL")
@@ -45,16 +50,4 @@ exports.handleRequest = function (req, res) {
       }
     });
   }
-
-
-  if ( req.url !== '/' && !archive.isUrlArchived(url, function(v) {return v})) {
-    res.writeHead(404, http.headers);
-    res.end();
-  }
-
 };
-
-
-
-
-
